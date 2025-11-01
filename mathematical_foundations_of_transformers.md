@@ -98,9 +98,9 @@ $$
 $$
 
 where:
-- $$\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V \in \mathbb{R}^{d_{model} \times d_k}$$ are learned weight matrices
+- \(\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V \in \mathbb{R}^{d_{model} \times d_k}\) are learned weight matrices
 - Typically, \(d_k = d_{model}/h\) where \(h\) is the number of attention heads
-- $$\mathbf{Q}, \mathbf{K}, \mathbf{V} \in \mathbb{R}^{n \times d_k}$$ where \(n\) is the sequence length
+- \(\mathbf{Q}, \mathbf{K}, \mathbf{V} \in \mathbb{R}^{n \times d_k}\) where \(n\) is the sequence length
 
 **Intuition:**
 - **Query (\(\mathbf{Q}\))**: "What am I looking for?"
@@ -173,7 +173,7 @@ $$
 \text{head}_i = \text{Attention}(\mathbf{Q}\mathbf{W}_Q^i, \mathbf{K}\mathbf{W}_K^i, \mathbf{V}\mathbf{W}_V^i)
 $$
 
-where $$\mathbf{W}_Q^i, \mathbf{W}_K^i, \mathbf{W}_V^i \in \mathbb{R}^{d_{model} \times d_k}$$ for each head \(i\).
+where \(\mathbf{W}_Q^i, \mathbf{W}_K^i, \mathbf{W}_V^i \in \mathbb{R}^{d_{model} \times d_k}\) for each head \(i\).
 
 Typically, \(d_k = d_v = d_{model}/h\) to keep total parameters constant.
 
@@ -210,9 +210,9 @@ $$
 $$
 
 where:
-- $$\mathbf{W}_1 \in \mathbb{R}^{d_{model} \times d_{ff}}, \mathbf{b}_1 \in \mathbb{R}^{d_{ff}}$$
-- $$\mathbf{W}_2 \in \mathbb{R}^{d_{ff} \times d_{model}}, \mathbf{b}_2 \in \mathbb{R}^{d_{model}}$$
-- $$d_{ff} = 4d_{model}$$ is common (e.g., if \(d_{model}=512\), then \(d_{ff}=2048\))
+- \(\mathbf{W}_1 \in \mathbb{R}^{d_{model} \times d_{ff}}, \mathbf{b}_1 \in \mathbb{R}^{d_{ff}}\)
+- \(\mathbf{W}_2 \in \mathbb{R}^{d_{ff} \times d_{model}}, \mathbf{b}_2 \in \mathbb{R}^{d_{model}}\)
+- \(d_{ff} = 4d_{model}\) is common (e.g., if \(d_{model}=512\), then \(d_{ff}=2048\))
 
 **Matrix Form:**
 
@@ -245,8 +245,8 @@ $$
 $$
 
 where:
-- $$\boldsymbol{\mu} = \frac{1}{d}\sum_{i=1}^{d} x_i$$ (mean)
-- $$\boldsymbol{\sigma}^2 = \frac{1}{d}\sum_{i=1}^{d} (x_i - \mu)^2$$ (variance)
+- \(\boldsymbol{\mu} = \frac{1}{d}\sum_{i=1}^{d} x_i\) (mean)
+- \(\boldsymbol{\sigma}^2 = \frac{1}{d}\sum_{i=1}^{d} (x_i - \mu)^2\) (variance)
 - \(\boldsymbol{\gamma}, \boldsymbol{\beta}\) are learned scale and shift parameters
 - \(\epsilon = 10^{-5}\) is a small constant for numerical stability
 
