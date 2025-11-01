@@ -38,17 +38,17 @@ Since Transformers have no inherent notion of sequence order, positional encodin
 
 Input tokens are first mapped to dense vector representations through an embedding layer. For a vocabulary of size \(V\), we have an embedding matrix:
 
-\[
+$$
 \mathbf{E} \in \mathbb{R}^{V \times d_{model}}
-\]
+$$
 
 where \(d_{model}\) is the model dimension (typically 512, 768, or higher).
 
 For an input sequence of length \(n\), tokens are converted to indices and mapped to embeddings:
 
-\[
+$$
 \mathbf{X} = \mathbf{E}[tokens] \in \mathbb{R}^{n \times d_{model}}
-\]
+$$
 
 where each row of \(\mathbf{X}\) represents the embedding of one token.
 
@@ -56,13 +56,13 @@ where each row of \(\mathbf{X}\) represents the embedding of one token.
 
 Since self-attention is permutation-invariant, we must inject positional information. The standard approach uses sinusoidal positional encodings:
 
-\[
+$$
 PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)
-\]
+$$
 
-\[
+$$
 PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
-\]
+$$
 
 where:
 - \(pos\) is the position in the sequence
@@ -71,9 +71,9 @@ where:
 
 The encoded sequence is:
 
-\[
+$$
 \mathbf{Z} = \mathbf{X} + \mathbf{PE} \in \mathbb{R}^{n \times d_{model}}
-\]
+$$
 
 **Why Sinusoidal Encoding?**
 
@@ -93,9 +93,9 @@ Self-attention is the core mechanism that allows Transformers to model dependenc
 
 Each position in the sequence is transformed into three vectors:
 
-\[
+$$
 \mathbf{Q} = \mathbf{Z}\mathbf{W}_Q, \quad \mathbf{K} = \mathbf{Z}\mathbf{W}_K, \quad \mathbf{V} = \mathbf{Z}\mathbf{W}_V
-\]
+$$
 
 where:
 - \(\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V \in \mathbb{R}^{d_{model} \times d_k}\) are learned weight matrices
@@ -111,31 +111,31 @@ where:
 
 For a specific query position \(i\) and key position \(j\), the attention score is:
 
-\[
+$$
 s_{ij} = \frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d_k}}
-\]
+$$
 
 The scaling factor \(\sqrt{d_k}\) prevents the dot products from growing large, which would push softmax into regions with extremely small gradients.
 
 Using matrix notation for all positions:
 
-\[
+$$
 \mathbf{S} = \frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}} \in \mathbb{R}^{n \times n}
-\]
+$$
 
 ### 3.3 Attention Weights via Softmax
 
 The scores are normalized using softmax to create attention weights:
 
-\[
+$$
 \mathbf{A} = \text{softmax}(\mathbf{S}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)
-\]
+$$
 
 Each element \(a_{ij}\) represents the attention weight from position \(i\) to position \(j\):
 
-\[
+$$
 a_{ij} = \frac{\exp(s_{ij})}{\sum_{k=1}^{n} \exp(s_{ik})}
-\]
+$$
 
 Notice that \(\sum_{j=1}^{n} a_{ij} = 1\) for all \(i\), making \(\mathbf{A}\) a probability distribution over positions for each query.
 
@@ -143,21 +143,21 @@ Notice that \(\sum_{j=1}^{n} a_{ij} = 1\) for all \(i\), making \(\mathbf{A}\) a
 
 The final attention output combines values weighted by attention weights:
 
-\[
+$$
 \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \mathbf{A}\mathbf{V} = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V}
-\]
+$$
 
 For each position \(i\), the output is:
 
-\[
+$$
 \mathbf{o}_i = \sum_{j=1}^{n} a_{ij} \mathbf{v}_j
-\]
+$$
 
 **Complete Formula:**
 
-\[
+$$
 \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right)\mathbf{V} \in \mathbb{R}^{n \times d_k}
-\]
+$$
 
 ---
 
@@ -169,9 +169,9 @@ Multi-head attention runs the attention mechanism multiple times in parallel wit
 
 With \(h\) heads, we compute \(h\) independent attention outputs:
 
-\[
+$$
 \text{head}_i = \text{Attention}(\mathbf{Q}\mathbf{W}_Q^i, \mathbf{K}\mathbf{W}_K^i, \mathbf{V}\mathbf{W}_V^i)
-\]
+$$
 
 where \(\mathbf{W}_Q^i, \mathbf{W}_K^i, \mathbf{W}_V^i \in \mathbb{R}^{d_{model} \times d_k}\) for each head \(i\).
 
@@ -181,21 +181,17 @@ Typically, \(d_k = d_v = d_{model}/h\) to keep total parameters constant.
 
 All heads are concatenated and projected with a final weight matrix:
 
-\[
-\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{head}_1, ..., \text{head}_h)\mathbf{W}_O
-\]
-
 where \(\mathbf{W}_O \in \mathbb{R}^{hd_v \times d_{model}}\).
 
 **Complete Formula:**
 
-\[
+$$
 \text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{head}_1, ..., \text{head}_h)\mathbf{W}_O
-\]
+$$
 
-\[
+$$
 \text{where } \text{head}_i = \text{Attention}(\mathbf{Q}\mathbf{W}_Q^i, \mathbf{K}\mathbf{W}_K^i, \mathbf{V}\mathbf{W}_V^i)
-\]
+$$
 
 **Intuition**: Different heads can learn to attend to different types of relationships:
 - Syntactic relationships
@@ -211,9 +207,9 @@ Each Transformer layer contains a feed-forward network (FFN) applied independent
 
 ### 5.1 Feed-Forward Network Architecture
 
-\[
+$$
 \text{FFN}(\mathbf{x}) = \max(0, \mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2 + \mathbf{b}_2
-\]
+$$
 
 where:
 - \(\mathbf{W}_1 \in \mathbb{R}^{d_{model} \times d_{ff}}, \mathbf{b}_1 \in \mathbb{R}^{d_{ff}}\)
@@ -224,9 +220,9 @@ where:
 
 For a sequence of length \(n\):
 
-\[
+$$
 \text{FFN}(\mathbf{X}) = \max(0, \mathbf{X}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2 + \mathbf{b}_2 \in \mathbb{R}^{n \times d_{model}}
-\]
+$$
 
 where \(\max\) is applied element-wise.
 
@@ -234,9 +230,9 @@ where \(\max\) is applied element-wise.
 
 **Modern Alternative**: Many models (e.g., GPT-2) use GELU activation:
 
-\[
+$$
 \text{GELU}(x) = x \cdot \Phi(x) = x \cdot \frac{1}{2}\left(1 + \text{erf}\left(\frac{x}{\sqrt{2}}\right)\right)
-\]
+$$
 
 ---
 
@@ -246,9 +242,9 @@ where \(\max\) is applied element-wise.
 
 Layer normalization stabilizes training by normalizing activations within each sample across features:
 
-\[
+$$
 \text{LayerNorm}(\mathbf{x}) = \boldsymbol{\gamma} \odot \frac{\mathbf{x} - \boldsymbol{\mu}}{\sqrt{\boldsymbol{\sigma}^2 + \epsilon}} + \boldsymbol{\beta}
-\]
+$$
 
 where:
 - \(\boldsymbol{\mu} = \frac{1}{d}\sum_{i=1}^{d} x_i\) (mean)
@@ -262,9 +258,9 @@ where:
 
 Residual connections enable gradient flow through deep networks:
 
-\[
+$$
 \mathbf{x}_{out} = \mathbf{x}_{in} + f(\mathbf{x}_{in})
-\]
+$$
 
 where \(f\) is a sub-layer (attention or FFN).
 
@@ -276,15 +272,15 @@ where \(f\) is a sub-layer (attention or FFN).
 
 **Original Transformer (Post-Norm)**:
 
-\[
+$$
 \mathbf{x}_{out} = \text{LayerNorm}(\mathbf{x}_{in} + \text{Attention}(\mathbf{x}_{in}))
-\]
+$$
 
 **Modern Variants (Pre-Norm)**:
 
-\[
+$$
 \mathbf{x}_{out} = \mathbf{x}_{in} + \text{Attention}(\text{LayerNorm}(\mathbf{x}_{in}))
-\]
+$$
 
 Pre-norm is more common in modern architectures (e.g., GPT-2, BERT) due to more stable training.
 
@@ -292,13 +288,13 @@ Pre-norm is more common in modern architectures (e.g., GPT-2, BERT) due to more 
 
 For an encoder layer with pre-norm:
 
-\[
+$$
 \mathbf{H}' = \text{LayerNorm}(\mathbf{H} + \text{MultiHeadAttention}(\mathbf{H}))
-\]
+$$
 
-\[
+$$
 \mathbf{H}_{out} = \text{LayerNorm}(\mathbf{H}' + \text{FFN}(\mathbf{H}'))
-\]
+$$
 
 ---
 
@@ -314,62 +310,62 @@ Number of heads: \(h = 1\) (single-head for simplicity)
 
 **Input embeddings** (random example):
 
-\[
+$$
 \mathbf{Z} = \begin{bmatrix}
 1.0 & 0.5 \\
 2.0 & 1.0 \\
 0.5 & 2.0
 \end{bmatrix}
-\]
+$$
 
 **Weight matrices** (random initialization):
 
-\[
+$$
 \mathbf{W}_Q = \begin{bmatrix} 0.5 & 0.3 \\ 0.2 & 0.4 \end{bmatrix}, \quad
 \mathbf{W}_K = \begin{bmatrix} 0.3 & 0.1 \\ 0.4 & 0.2 \end{bmatrix}, \quad
 \mathbf{W}_V = \begin{bmatrix} 0.2 & 0.5 \\ 0.3 & 0.1 \end{bmatrix}
-\]
+$$
 
 ### Step 1: Compute Q, K, V
 
-\[
+$$
 \mathbf{Q} = \mathbf{Z}\mathbf{W}_Q = \begin{bmatrix} 1.0 & 0.5 \\ 2.0 & 1.0 \\ 0.5 & 2.0 \end{bmatrix} \begin{bmatrix} 0.5 & 0.3 \\ 0.2 & 0.4 \end{bmatrix}
 = \begin{bmatrix} 0.6 & 0.5 \\ 1.2 & 1.0 \\ 0.65 & 1.1 \end{bmatrix}
-\]
+$$
 
-\[
+$$
 \mathbf{K} = \mathbf{Z}\mathbf{W}_K = \begin{bmatrix} 1.0 & 0.5 \\ 2.0 & 1.0 \\ 0.5 & 2.0 \end{bmatrix} \begin{bmatrix} 0.3 & 0.1 \\ 0.4 & 0.2 \end{bmatrix}
 = \begin{bmatrix} 0.5 & 0.2 \\ 1.0 & 0.4 \\ 0.95 & 0.5 \end{bmatrix}
-\]
+$$
 
-\[
+$$
 \mathbf{V} = \mathbf{Z}\mathbf{W}_V = \begin{bmatrix} 1.0 & 0.5 \\ 2.0 & 1.0 \\ 0.5 & 2.0 \end{bmatrix} \begin{bmatrix} 0.2 & 0.5 \\ 0.3 & 0.1 \end{bmatrix}
 = \begin{bmatrix} 0.35 & 0.55 \\ 0.7 & 1.1 \\ 0.76 & 0.45 \end{bmatrix}
-\]
+$$
 
 ### Step 2: Compute Attention Scores
 
 With \(d_k = 2\), the scaling factor is \(\sqrt{d_k} = \sqrt{2} \approx 1.414\):
 
-\[
+$$
 \mathbf{S} = \frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{2}} = \frac{1}{\sqrt{2}} \begin{bmatrix} 0.6 & 0.5 \\ 1.2 & 1.0 \\ 0.65 & 1.1 \end{bmatrix} \begin{bmatrix} 0.5 & 1.0 & 0.95 \\ 0.2 & 0.4 & 0.5 \end{bmatrix}
-\]
+$$
 
-\[
+$$
 \mathbf{S} = \frac{1}{\sqrt{2}} \begin{bmatrix}
 0.40 & 0.80 & 0.82 \\
 0.80 & 1.60 & 1.64 \\
 0.55 & 1.09 & 1.07
 \end{bmatrix}
-\]
+$$
 
-\[
+$$
 \mathbf{S} \approx \begin{bmatrix}
 0.283 & 0.566 & 0.580 \\
 0.566 & 1.131 & 1.160 \\
 0.389 & 0.771 & 0.757
 \end{bmatrix}
-\]
+$$
 
 ### Step 3: Apply Softmax
 
@@ -381,25 +377,25 @@ For position 1 (first row):
 
 Similarly for other rows:
 
-\[
+$$
 \mathbf{A} = \begin{bmatrix}
 0.272 & 0.361 & 0.367 \\
 0.240 & 0.327 & 0.433 \\
 0.262 & 0.368 & 0.370
 \end{bmatrix}
-\]
+$$
 
 Notice each row sums to approximately 1.0 (accounting for rounding).
 
 ### Step 4: Compute Attention Output
 
-\[
+$$
 \text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \mathbf{A}\mathbf{V} = \begin{bmatrix} 0.272 & 0.361 & 0.367 \\ 0.240 & 0.327 & 0.433 \\ 0.262 & 0.368 & 0.370 \end{bmatrix} \begin{bmatrix} 0.35 & 0.55 \\ 0.7 & 1.1 \\ 0.76 & 0.45 \end{bmatrix}
-\]
+$$
 
-\[
+$$
 \approx \begin{bmatrix} 0.597 & 0.780 \\ 0.630 & 0.793 \\ 0.600 & 0.772 \end{bmatrix}
-\]
+$$
 
 **Interpretation**: Each output token is a weighted combination of all input tokens. For example, the first output token (0.597, 0.780) is computed as:
 - 27.2% from token 1
@@ -418,13 +414,13 @@ Understanding gradient flow is crucial for training deep Transformer models. Her
 
 The softmax function in attention can saturate, causing vanishing gradients. Consider the gradient of softmax output \(a_{ij}\) with respect to score \(s_{kl}\):
 
-\[
+$$
 \frac{\partial a_{ij}}{\partial s_{kl}} = \begin{cases}
 a_{ij}(1 - a_{ij}) & \text{if } i=k \text{ and } j=l \\
 -a_{ik} a_{il} & \text{if } i=k \text{ and } j \neq l \\
 0 & \text{otherwise}
 \end{cases}
-\]
+$$
 
 **Problem**: When \(a_{ij}\) is close to 0 or 1, \(a_{ij}(1 - a_{ij}) \approx 0\), leading to vanishing gradients.
 
@@ -434,23 +430,23 @@ a_{ij}(1 - a_{ij}) & \text{if } i=k \text{ and } j=l \\
 
 For a loss function \(\mathcal{L}\), the gradient with respect to \(\mathbf{Q}\):
 
-\[
+$$
 \frac{\partial \mathcal{L}}{\partial \mathbf{Q}} = \frac{\partial \mathcal{L}}{\partial \text{Attention}} \cdot \frac{\partial \text{Attention}}{\partial \mathbf{Q}}
-\]
+$$
 
 where
 
-\[
+$$
 \frac{\partial \text{Attention}}{\partial \mathbf{Q}} = \frac{1}{\sqrt{d_k}} \mathbf{V} \mathbf{A}^T
-\]
+$$
 
 ### 8.3 Residual Connections Enable Deep Learning
 
 Without residual connections, gradients must propagate through layers, potentially vanishing:
 
-\[
+$$
 \frac{\partial \mathcal{L}}{\partial \mathbf{x}_{in}} = \frac{\partial \mathcal{L}}{\partial \mathbf{x}_{out}} \cdot (1 + \frac{\partial f}{\partial \mathbf{x}_{in}})
-\]
+$$
 
 The \(1\) term allows gradients to flow directly, even if \(\frac{\partial f}{\partial \mathbf{x}_{in}}\) is small.
 
@@ -460,9 +456,9 @@ The \(1\) term allows gradients to flow directly, even if \(\frac{\partial f}{\p
 
 Layer normalization reduces the dependence of gradients on the magnitude of activations:
 
-\[
+$$
 \frac{\partial \text{LayerNorm}(\mathbf{x})}{\partial \mathbf{x}} = \frac{\boldsymbol{\gamma}}{\sqrt{\boldsymbol{\sigma}^2 + \epsilon}} \left(\mathbf{I} - \frac{1}{d}\mathbf{1}\mathbf{1}^T - \frac{(\mathbf{x} - \boldsymbol{\mu})(\mathbf{x} - \boldsymbol{\mu})^T}{d(\boldsymbol{\sigma}^2 + \epsilon)}\right)
-\]
+$$
 
 Normalizing activations keeps this gradient well-behaved.
 
@@ -510,9 +506,9 @@ The combination of multiple layers with residual connections allows hierarchical
 
 The main drawback is quadratic computational and memory complexity:
 
-\[
+$$
 O(n^2) \text{ for attention} \times O(n) \text{ for sequence length} = O(n^2 d)
-\]
+$$
 
 This limits sequence length in practice. Solutions include:
 - Sparse attention (e.g., Longformer, BigBird)
@@ -595,28 +591,28 @@ These properties have made Transformers the foundation of modern LLMs, enabling 
 
 For softmax output \(y_j = \frac{e^{s_j}}{\sum_k e^{s_k}}\):
 
-\[
+$$
 \frac{\partial y_j}{\partial s_i} = \begin{cases}
 y_j (1 - y_j) & \text{if } i = j \\
 -y_j y_i & \text{if } i \neq j
 \end{cases}
-\]
+$$
 
 ### A.2 Layer Normalization Gradient
 
 For LayerNorm\((\mathbf{x}) = \frac{\mathbf{x} - \boldsymbol{\mu}}{\sqrt{\boldsymbol{\sigma}^2 + \epsilon}}\):
 
-\[
+$$
 \frac{\partial \text{LayerNorm}(\mathbf{x})}{\partial x_i} = \frac{\gamma}{\sqrt{\sigma^2 + \epsilon}} \left(1 - \frac{1}{d} - \frac{(x_i - \mu)^2}{d(\sigma^2 + \epsilon)}\right)
-\]
+$$
 
 ### A.3 Attention as a Kernel Method
 
 Attention can be viewed as kernel smoothing:
 
-\[
+$$
 \text{Attention}(\mathbf{x}_i, \{\mathbf{x}_j\}) = \sum_{j} \alpha_{ij} \mathbf{x}_j, \quad \alpha_{ij} = \frac{k(\mathbf{x}_i, \mathbf{x}_j)}{\sum_{k} k(\mathbf{x}_i, \mathbf{x}_k)}
-\]
+$$
 
 where \(k(\mathbf{q}, \mathbf{k}) = e^{\mathbf{q}^T\mathbf{k}/\sqrt{d_k}}\) is an exponential kernel.
 
