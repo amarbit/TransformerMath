@@ -245,10 +245,11 @@ $$
 $$
 
 where:
-- \(\boldsymbol{\mu} = \frac{1}{d}\sum_{i=1}^{d} x_i\) (mean)
-- \(\boldsymbol{\sigma}^2 = \frac{1}{d}\sum_{i=1}^{d} (x_i - \mu)^2\) (variance)
-- \(\boldsymbol{\gamma}, \boldsymbol{\beta}\) are learned scale and shift parameters
-- \(\epsilon = 10^{-5}\) is a small constant for numerical stability
+- μ = (1/d) Σᵢ₌₁ᵈ xᵢ (mean)
+- σ² = (1/d) Σᵢ₌₁ᵈ (xᵢ − μ)² (variance)
+- γ, β are learned scale and shift parameters
+- ε = 1×10⁻⁵ is a small constant for numerical stability
+
 
 **Key Difference from Batch Normalization**: Layer normalization computes statistics across features for each sample independently, making it suitable for variable-length sequences.
 
@@ -617,4 +618,5 @@ where $$k(\mathbf{q}, \mathbf{k}) = e^{\mathbf{q}^T\mathbf{k}/\sqrt{d_k}}$$ is a
 ---
 
 *Document created for educational purposes. Last updated: 2024*
+
 
