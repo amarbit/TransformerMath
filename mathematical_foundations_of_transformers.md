@@ -589,7 +589,7 @@ These properties have made Transformers the foundation of modern LLMs, enabling 
 
 ### A.1 Softmax Gradient Derivation
 
-For softmax output \(y_j = \frac{e^{s_j}}{\sum_k e^{s_k}}\):
+For softmax output $$y_j = \frac{e^{s_j}}{\sum_k e^{s_k}}$$:
 
 $$
 \frac{\partial y_j}{\partial s_i} = \begin{cases}
@@ -600,7 +600,7 @@ $$
 
 ### A.2 Layer Normalization Gradient
 
-For LayerNorm\((\mathbf{x}) = \frac{\mathbf{x} - \boldsymbol{\mu}}{\sqrt{\boldsymbol{\sigma}^2 + \epsilon}}\):
+For $$\text{LayerNorm}(\mathbf{x}) = \frac{\mathbf{x} - \boldsymbol{\mu}}{\sqrt{\boldsymbol{\sigma}^2 + \epsilon}}$$:
 
 $$
 \frac{\partial \text{LayerNorm}(\mathbf{x})}{\partial x_i} = \frac{\gamma}{\sqrt{\sigma^2 + \epsilon}} \left(1 - \frac{1}{d} - \frac{(x_i - \mu)^2}{d(\sigma^2 + \epsilon)}\right)
@@ -614,7 +614,7 @@ $$
 \text{Attention}(\mathbf{x}_i, \{\mathbf{x}_j\}) = \sum_{j} \alpha_{ij} \mathbf{x}_j, \quad \alpha_{ij} = \frac{k(\mathbf{x}_i, \mathbf{x}_j)}{\sum_{k} k(\mathbf{x}_i, \mathbf{x}_k)}
 $$
 
-where \(k(\mathbf{q}, \mathbf{k}) = e^{\mathbf{q}^T\mathbf{k}/\sqrt{d_k}}\) is an exponential kernel.
+where $$k(\mathbf{q}, \mathbf{k}) = e^{\mathbf{q}^T\mathbf{k}/\sqrt{d_k}}$$ is an exponential kernel.
 
 ---
 
