@@ -97,15 +97,23 @@ $$
 \mathbf{Q} = \mathbf{Z}\mathbf{W}_Q, \quad \mathbf{K} = \mathbf{Z}\mathbf{W}_K, \quad \mathbf{V} = \mathbf{Z}\mathbf{W}_V
 $$
 
-where:
-- \(\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V \in \mathbb{R}^{d_{model} \times d_k}\) are learned weight matrices
-- Typically, \(d_k = d_{model}/h\) where \(h\) is the number of attention heads
-- \(\mathbf{Q}, \mathbf{K}, \mathbf{V} \in \mathbb{R}^{n \times d_k}\) where \(n\) is the sequence length
+**Weight Matrices**
 
-**Intuition:**
-- **Query (\(\mathbf{Q}\))**: "What am I looking for?"
-- **Key (\(\mathbf{K}\))**: "What do I represent?"
-- **Value (\(\mathbf{V}\))**: "What information do I contain?"
+(W_Q, W_K, W_V) ∈ ℝ^(d_model × d_k) — learned projection matrices
+
+Typically,  
+d_k = d_model / h where h = number of attention heads
+
+(Q, K, V) ∈ ℝ^(n × d_k) where n = sequence length
+
+---
+
+**Intuition**
+
+- **Query (Q):** “What am I looking for?”
+- **Key (K):** “What do I represent?”
+- **Value (V):** “What information do I contain?”
+
 
 ### 3.2 Attention Score Computation
 
@@ -618,5 +626,6 @@ where $$k(\mathbf{q}, \mathbf{k}) = e^{\mathbf{q}^T\mathbf{k}/\sqrt{d_k}}$$ is a
 ---
 
 *Document created for educational purposes. Last updated: 2024*
+
 
 
